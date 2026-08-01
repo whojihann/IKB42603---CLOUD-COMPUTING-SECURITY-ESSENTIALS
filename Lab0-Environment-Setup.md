@@ -86,7 +86,7 @@ Docker version 28.5.2+dfsg4, build 9cc6dea35e9a963f281434761c656fba4ac43aed
 
 **Evidence:**
 
-![Step 1 — Docker Version](./1.%20docker.png)
+![Step 1 — Docker Version](./Lab0-Environment-Setup/1.%20docker.png)
 
 > 💡 **Tip:** If Docker is not installed, run `sudo apt install docker.io -y` and then `sudo systemctl enable --now docker`.
 
@@ -110,7 +110,7 @@ aws-cli/2.36.10 Python/3.14.6 Linux/6.19.14+kali-amd64 exe/x86_64.kali.2026
 
 **Evidence:**
 
-![Step 2 — AWS CLI Version](./2.awscli.png)
+![Step 2 — AWS CLI Version](./Lab0-Environment-Setup/2.awscli.png)
 
 > 💡 **Tip:** AWS CLI v2 is required. Install via the official AWS installer if not present:
 > ```bash
@@ -142,7 +142,7 @@ Kustomize Version: v5.8.1
 
 **Evidence:**
 
-![Step 3 — kind and kubectl Versions](./3.kind-kubectl.png)
+![Step 3 — kind and kubectl Versions](./Lab0-Environment-Setup/3.kind-kubectl.png)
 
 > 💡 **Tip:** Install kind via:
 > ```bash
@@ -187,7 +187,7 @@ License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
 
 **Evidence:**
 
-![Step 4 — Helper Tools: OpenSSL and oathtool](./4.Helper_Tools.png)
+![Step 4 — Helper Tools: OpenSSL and oathtool](./Lab0-Environment-Setup/4.Helper_Tools.png)
 
 > 💡 **Tip:** Install oathtool via `sudo apt install oathtool -y` if missing.
 
@@ -251,7 +251,7 @@ curl http://localhost:4566/_localstack/health
 
 **Evidence:**
 
-![Step 5 — LocalStack Running and Health Check](./5.LocalStack_Container_Running_%26_Health_Check.png)
+![Step 5 — LocalStack Running and Health Check](./Lab0-Environment-Setup/5.LocalStack_Container_Running_%26_Health_Check.png)
 
 > ✅ All services showing `"available"` confirms LocalStack is fully operational.
 
@@ -281,7 +281,7 @@ docker rm -f localstack
 
 **Evidence:**
 
-![Step 6 — Start, Stop and Remove LocalStack](./6.Start_%26_Stop_Local_Environment.png)
+![Step 6 — Start, Stop and Remove LocalStack](./Lab0-Environment-Setup/6.Start_%26_Stop_Local_Environment.png)
 
 > ⚠️ **Note:** `docker rm -f localstack` will **destroy** the container and all its state. Use `stop` / `start` to preserve the container between sessions.
 
@@ -328,7 +328,7 @@ CoreDNS is running at https://127.0.0.1:36537/api/v1/namespaces/kube-system/serv
 
 **Evidence:**
 
-![Step 7 — Create Kubernetes Cluster with kind](./7.Kubenetes.png)
+![Step 7 — Create Kubernetes Cluster with kind](./Lab0-Environment-Setup/7.Kubenetes.png)
 
 > 💡 **Tip:** The context `kind-ccse` is automatically set. You can verify the active context anytime with `kubectl config current-context`.
 
@@ -353,7 +353,7 @@ ccse-control-plane   Ready    control-plane   4m58s   v1.30.0
 
 **Evidence:**
 
-![Step 8 — kubectl get nodes](./8.Kubenetes%202.0.png)
+![Step 8 — kubectl get nodes](./Lab0-Environment-Setup/8.Kubenetes%202.0.png)
 
 > ✅ `STATUS: Ready` confirms the Kubernetes control-plane node is healthy and accepting workloads.
 
@@ -399,7 +399,7 @@ aws $EP sts get-caller-identity
 
 **Evidence:**
 
-![Step 9 — One-Time AWS CLI Configuration](./9.one_time_AWS_CLI.png)
+![Step 9 — One-Time AWS CLI Configuration](./Lab0-Environment-Setup/9.one_time_AWS_CLI.png)
 
 > ✅ A valid JSON response from `sts get-caller-identity` confirms AWS CLI is correctly talking to the LocalStack endpoint.
 
