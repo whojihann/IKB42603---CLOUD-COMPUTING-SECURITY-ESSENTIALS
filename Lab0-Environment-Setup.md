@@ -7,7 +7,7 @@
 | **Course Code**  | IKB42603                           |
 | **Course Name**  | Cloud Security Engineering         |
 | **Lab Title**    | Lab 0 — Environment Setup          |
-| **Student Name** | jiee                               |
+| **Student Name** | Nurul Jihan Nabilah Binti Azlan    |
 | **Platform**     | Kali Linux                         |
 | **Date**         | August 1, 2026                     |
 
