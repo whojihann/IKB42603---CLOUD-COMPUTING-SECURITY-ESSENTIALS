@@ -588,7 +588,7 @@ awslocal iam delete-access-key \
 
 The screenshot below shows the access key lifecycle — creation, deactivation, and deletion — demonstrating proper credential hygiene practices.
 
-![6. Credential Hygiene & Access Key Management](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/6.Credential%20Hygiene%20%26%20Access%20Key.png)
+![6. Credential Hygiene & Access Key Management]![6. Credential Hygiene & Access Key Management](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/6.Credential%20Hygiene%20%26%20Access%20Key.png)
 
 *Figure 6: Access key management workflow — listing active keys, deactivating the old key, and confirming the Inactive status prior to deletion.*
 
