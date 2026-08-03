@@ -1,4 +1,5 @@
-# Lab 0.1 — LocalStack with Auth Token + Web Console
+# LAB 1: Cloud Account Security, Identity & Access Management
+## Session A (Week 1) — Cloud Identity with LocalStack
 
 ---
 
@@ -7,96 +8,31 @@
 | Field | Details |
 |---|---|
 | **Course Code** | IKB42603 Cloud Computing Security Essentials |
-| **Lab Title** | Lab 0.1 — LocalStack with Auth Token + Web Console |
+| **Lab Title** | LAB 1: Cloud Account Security, Identity & Access Management |
 | **Student Name** | NURUL JIHAN NABILAH BINTI AZLAN |
-| **Platform** | LocalStack Community / Pro (Auth Token Track) |
+| **Institution** | UniKL MIIT |
+| **Instructor** | Prof. Dr. Shahrulniza Musa |
+| **Session** | Session A — Week 1 |
+| **Date** | August 3, 2026 |
 
 ---
 
 ## Table of Contents
 
-1. [Overview & Objectives](#1-overview--objectives)
-2. [Prerequisites & Environment Setup](#2-prerequisites--environment-setup)
-3. [Part 1 — Activating LocalStack with Auth Token](#3-part-1--activating-localstack-with-auth-token)
-4. [Part 2 — Verifying the LocalStack Web Console & Resource Browser](#4-part-2--verifying-the-localstack-web-console--resource-browser)
-5. [Part 3 — Configuring Dummy AWS Credentials & Testing AWS CLI](#5-part-3--configuring-dummy-aws-credentials--testing-aws-cli)
-6. [Part 4 — IAM Least-Privilege Admin User Setup](#6-part-4--iam-least-privilege-admin-user-setup)
-7. [Part 5 — Least-Privilege Admin 2.0 — Policy Verification](#7-part-5--least-privilege-admin-20--policy-verification)
-8. [Part 6 — Analyst User with Scoped Policy](#8-part-6--analyst-user-with-scoped-policy)
-9. [Part 7 — Credential Hygiene & Access Key Management](#9-part-7--credential-hygiene--access-key-management)
-10. [Part 8 — Teardown & Cleanup](#10-part-8--teardown--cleanup)
-11. [Verification Checklist](#11-verification-checklist)
-12. [Summary](#12-summary)
+1. [Environment Setup Verification](#1-environment-setup-verification)
+2. [Task 1 — Map the Cloud Identity Landscape](#2-task-1--map-the-cloud-identity-landscape)
+3. [Task 2 — Create a Least-Privilege Admin](#3-task-2--create-a-least-privilege-admin)
+4. [Task 3 — Enforce Least Privilege with a Scoped Policy](#4-task-3--enforce-least-privilege-with-a-scoped-policy)
+5. [Task 4 — Credential Hygiene & Access Keys](#5-task-4--credential-hygiene--access-keys)
+6. [Session A Verification Checklist](#6-session-a-verification-checklist)
 
 ---
 
-## 1. Overview & Objectives
+## 1. Environment Setup Verification
 
-### 1.1 Context — Auth-Token Track
+### 1.1 Docker Startup & LocalStack Container
 
-> **Note:** Starting from **23 March 2026**, LocalStack requires an **Auth Token** (previously called an API key) for activating the Pro tier and accessing advanced services such as the **Web Console** and **Resource Browser**. This lab follows the **Auth-Token activation track**, which is the current and recommended method for all new LocalStack installations.
-
-This lab demonstrates how to:
-
-- Start LocalStack using a valid **Auth Token** passed via the `LOCALSTACK_AUTH_TOKEN` environment variable.
-- Verify activation through the `/_localstack/info` health endpoint.
-- Access the **LocalStack Web Console** (port `31566`) and the **Resource Browser**.
-- Configure **dummy AWS CLI credentials** for local emulation.
-- Create **IAM users**, **least-privilege policies**, and **scoped access keys** using `awslocal`.
-- Practice **credential hygiene** — rotating and deactivating access keys.
-
-### 1.2 Learning Objectives
-
-| # | Objective |
-|---|---|
-| 1 | Start and verify LocalStack using an Auth Token |
-| 2 | Use the LocalStack Web Console and Resource Browser |
-| 3 | Configure AWS CLI for local endpoint targeting |
-| 4 | Create IAM users with least-privilege policies |
-| 5 | Test IAM permission boundaries with scoped users |
-| 6 | Rotate and deactivate IAM access keys safely |
-
----
-
-## 2. Prerequisites & Environment Setup
-
-### 2.1 Required Tools
-
-| Tool | Version | Purpose |
-|---|---|---|
-| Docker Desktop | ≥ 4.x | Runs the LocalStack container |
-| AWS CLI v2 | ≥ 2.x | Sends API commands to LocalStack |
-| `awslocal` wrapper | latest | Automatically targets `http://localhost:4566` |
-| Python / pip | ≥ 3.8 | For `localstack` CLI and `awscli-local` |
-| LocalStack Auth Token | valid | Required since March 23 2026 |
-
-### 2.2 Install `awscli-local`
-
-```bash
-pip install awscli-local
-```
-
-### 2.3 Retrieve Your Auth Token
-
-Log in to [https://app.localstack.cloud](https://app.localstack.cloud) → **Account Settings** → **Auth Token**.
-
-> ⚠️ **Security Note:** Your `LOCALSTACK_AUTH_TOKEN` is a **secret credential**. **NEVER** commit it to Git, share it in screenshots, or hardcode it in any file. Always inject it as an environment variable at runtime.
-
----
-
-## 3. Part 1 — Activating LocalStack with Auth Token
-
-### 3.1 Export the Auth Token
-
-Open a terminal and export your token before starting LocalStack:
-
-```bash
-export LOCALSTACK_AUTH_TOKEN="ls-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-```
-
-> ⚠️ **Security Note:** Never paste your actual token into any shared document, public repository, or screenshot. Use a placeholder such as `ls-...` in all documentation.
-
-### 3.2 Start LocalStack via Docker
+LocalStack is started as a Docker container, exposing the primary API gateway on port `4566` and the Web Console on port `31566`. The container image used is `localstack/localstack-pro`, which requires a valid `LOCALSTACK_AUTH_TOKEN` for activation of the Pro edition and IAM services.
 
 ```bash
 docker run --rm -it \
@@ -108,130 +44,57 @@ docker run --rm -it \
   localstack/localstack-pro
 ```
 
-Alternatively, using `docker-compose.yml`:
+Once the container is up, the terminal output shows the LocalStack ASCII banner followed by service readiness logs confirming all emulated AWS services (including IAM) are initialised and listening on `http://localhost:4566`.
 
-```yaml
-version: "3.8"
-services:
-  localstack:
-    image: localstack/localstack-pro
-    ports:
-      - "4566:4566"
-      - "4510-4559:4510-4559"
-      - "31566:31566"
-    environment:
-      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-```
+### 1.2 LocalStack Health Check — `/_localstack/health`
+
+The health endpoint confirms the container status and which services are running:
 
 ```bash
-docker-compose up -d
+curl http://localhost:4566/_localstack/health | python3 -m json.tool
 ```
 
-### 3.3 Verify Activation via `/_localstack/info`
-
-```bash
-curl http://localhost:4566/_localstack/info | python3 -m json.tool
-```
-
-**Expected output (excerpt):**
+**Expected response (excerpt):**
 
 ```json
 {
+  "services": {
+    "iam": "available",
+    "sts": "available",
+    "s3": "available"
+  },
   "version": "3.x.x",
   "edition": "pro",
-  "is_license_activated": true,
-  "session_id": "...",
-  "machine_id": "...",
-  "system": "linux",
-  "is_docker": true
+  "is_license_activated": true
 }
 ```
 
-The key field to verify is `"is_license_activated": true`.
+The critical field is `"is_license_activated": true`, which confirms the Auth Token was accepted and the Pro edition is fully active. The IAM service status of `"available"` is a prerequisite for all subsequent tasks in this lab.
 
-### 3.4 Evidence Screenshot
+### 1.3 Dummy AWS CLI Configuration
 
-The screenshot below shows the LocalStack **IAM** service dashboard visible in the Web Console, confirming the container is running with a valid Auth Token and the Pro edition is active.
-
-![1. LocalStack IAM — Container Activation and Licence Verification](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/1.LocalStack%20IAM.png)
-
-*Figure 1: LocalStack Web Console showing the IAM service is available, confirming Pro edition activation via Auth Token.*
-
----
-
-## 4. Part 2 — Verifying the LocalStack Web Console & Resource Browser
-
-### 4.1 Access the Web Console
-
-Open a browser and navigate to:
-
-```
-http://localhost:31566
-```
-
-You should see the **LocalStack Web Console** dashboard listing all available AWS service emulators.
-
-### 4.2 Navigate the Resource Browser
-
-From the Web Console sidebar, select **Resource Browser**. This allows you to:
-
-- View all emulated AWS resources (S3 buckets, IAM users, Lambda functions, etc.)
-- Create and manage resources directly through the GUI.
-- Inspect resource state in real time.
-
-**Key Web Console URLs:**
-
-| Feature | URL |
-|---|---|
-| Dashboard | `http://localhost:31566` |
-| Resource Browser | `http://localhost:31566/resources` |
-| IAM Users | `http://localhost:31566/resources/iam/users` |
-| S3 Buckets | `http://localhost:31566/resources/s3` |
-
-> **Note:** The Web Console is a **Pro-only** feature. It is only accessible when `is_license_activated: true` is confirmed.
-
----
-
-## 5. Part 3 — Configuring Dummy AWS Credentials & Testing AWS CLI
-
-### 5.1 Why Dummy Credentials Are Needed
-
-LocalStack does not validate real AWS credentials — it only requires that credentials are **present and non-empty**. Any dummy values will work.
-
-### 5.2 Configure Dummy Credentials
+LocalStack does not validate real AWS credentials — it only requires that credential fields are non-empty. Standard dummy values are used:
 
 ```bash
 aws configure
 ```
 
-Enter the following dummy values:
+| Prompt | Value Entered |
+|---|---|
+| AWS Access Key ID | `test` |
+| AWS Secret Access Key | `test` |
+| Default region name | `us-east-1` |
+| Default output format | `json` |
 
-```
-AWS Access Key ID:     test
-AWS Secret Access Key: test
-Default region name:   us-east-1
-Default output format: json
-```
-
-Or set them directly as environment variables:
-
-```bash
-export AWS_ACCESS_KEY_ID=test
-export AWS_SECRET_ACCESS_KEY=test
-export AWS_DEFAULT_REGION=us-east-1
-```
-
-### 5.3 Define the Local Endpoint Shortcut
-
-To avoid typing `--endpoint-url http://localhost:4566` on every command, define an alias:
+A local endpoint shortcut is also defined to avoid repeating the `--endpoint-url` flag:
 
 ```bash
 export EP="--endpoint-url=http://localhost:4566"
 ```
 
-### 5.4 Verify Identity with STS
+### 1.4 STS Identity Verification — `sts get-caller-identity`
+
+The AWS CLI is tested by calling the STS service against the local endpoint:
 
 ```bash
 aws $EP sts get-caller-identity
@@ -247,89 +110,86 @@ aws $EP sts get-caller-identity
 }
 ```
 
-This confirms the AWS CLI is successfully communicating with the LocalStack STS endpoint.
+The `Account` value of `000000000000` is LocalStack's default emulated AWS account ID, confirming the CLI is correctly routing requests to `http://localhost:4566` rather than the live AWS endpoints.
 
-### 5.5 Evidence Screenshot
+### 1.5 Evidence — Environment Setup & LocalStack IAM Dashboard
 
-The screenshot below shows the terminal output of `aws $EP sts get-caller-identity` after configuring dummy credentials, confirming the local endpoint is reachable.
+The screenshot below shows the LocalStack Web Console with the IAM service dashboard visible, confirming the container is running with the Pro edition active and the IAM service is available for use.
 
-![2. Setup Dummy Credentials & Test AWS CLI](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/2.Setup%20dummy%20credentials%20%26%20test%20AWS%20CLI.png)
+![Environment Setup](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/1.LocalStack%20IAM.png)
 
-*Figure 2: Terminal output confirming dummy credential configuration and successful `sts get-caller-identity` call against the LocalStack STS endpoint.*
+*Figure 1: LocalStack Web Console — IAM service dashboard confirming Pro edition activation and service availability.*
+
+### 1.6 Evidence — AWS CLI Setup & STS Identity Check
+
+The screenshot below shows the terminal output of the dummy credential configuration and the successful `sts get-caller-identity` call, confirming end-to-end CLI connectivity to the LocalStack STS endpoint.
+
+![AWS CLI Setup](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/2.Setup%20dummy%20credentials%20%26%20test%20AWS%20CLI.png)
+
+*Figure 2: Terminal confirming dummy AWS credentials configured and `sts get-caller-identity` returning account `000000000000`.*
 
 ---
 
-## 6. Part 4 — IAM Least-Privilege Admin User Setup
+## 2. Task 1 — Map the Cloud Identity Landscape
 
-### 6.1 Principle of Least Privilege
+### 2.1 Objective
 
-The **Principle of Least Privilege (PoLP)** states that every user, process, or service should have only the **minimum permissions** necessary to perform its intended function. In this part, we create an admin user that has full IAM and service access, but the policy is explicitly defined — avoiding the use of `*:*` wildcards where possible.
+Before creating any IAM resources, it is essential to understand the core identity primitives in the AWS IAM model. This task maps each identity component to its technical purpose within the cloud security architecture.
 
-### 6.2 Create the IAM Admin User
+### 2.2 IAM Identity Landscape — Reference Table
+
+| IAM Component | Purpose |
+|---|---|
+| **Root User** | The initial, unrestricted account identity created when an AWS account is provisioned. It holds full administrative access to all services and billing, bypasses all IAM permission boundaries, and cannot be restricted by IAM policies. Should never be used for day-to-day operations; its credentials must be protected and MFA enforced immediately. |
+| **IAM User** | A long-term identity representing a human operator or a service principal within an AWS account. Each IAM user has its own credentials (password and/or access keys) and is subject to IAM policy evaluation. Used to assign individual, auditable access rather than sharing the root account. |
+| **IAM Policy** | A JSON document that defines a set of permissions — `Allow` or `Deny` — for specified AWS actions on specified resources. Policies are evaluated at request time: an explicit `Deny` always wins, then an explicit `Allow` grants access, and the implicit default is `Deny`. Policies can be AWS-managed, customer-managed, or inline. |
+| **IAM Group** | A logical collection of IAM users. Policies attached to a group are inherited by all members, enabling consistent, role-based permission management at scale. A user can belong to multiple groups; permissions from all groups are combined during policy evaluation. Groups cannot be nested or used as principals in trust policies. |
+| **IAM Role** | A temporary identity that can be assumed by AWS services, IAM users, or external federated identities via the AWS Security Token Service (STS). Unlike users, roles do not have permanent credentials — they issue short-lived session tokens. Roles are the preferred mechanism for granting cross-service access (e.g., EC2 assuming an S3 read role) and enabling least-privilege without managing static keys. |
+
+---
+
+## 3. Task 2 — Create a Least-Privilege Admin
+
+### 3.1 Objective
+
+Create a dedicated IAM admin identity that operates under the Principle of Least Privilege (PoLP) — granting full administrative capability via a managed group rather than attaching policies directly to the user.
+
+### 3.2 Step 1 — Create the `Admins` Group
+
+A group is created first so that the admin policy is attached at the group level, making it easier to add or remove admin users in the future without modifying individual user policies.
 
 ```bash
-awslocal iam create-user --user-name admin-user
+awslocal iam create-group --group-name Admins
 ```
 
 **Output:**
 
 ```json
 {
-    "User": {
-        "UserId": "AIDA...",
-        "Arn": "arn:aws:iam::000000000000:user/admin-user",
-        "UserName": "admin-user",
+    "Group": {
         "Path": "/",
-        "CreateDate": "2026-03-23T00:00:00+00:00"
+        "GroupName": "Admins",
+        "GroupId": "AGPA...",
+        "Arn": "arn:aws:iam::000000000000:group/Admins",
+        "CreateDate": "2026-08-03T00:00:00+00:00"
     }
 }
 ```
 
-### 6.3 Create a Least-Privilege Admin Policy
+### 3.3 Step 2 — Attach `AdministratorAccess` to the `Admins` Group
 
-Save the following policy document as `admin-policy.json`:
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "AllowAdminActions",
-      "Effect": "Allow",
-      "Action": [
-        "iam:*",
-        "s3:*",
-        "ec2:*",
-        "lambda:*",
-        "sts:GetCallerIdentity",
-        "sts:AssumeRole"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-```
-
-Create the policy in LocalStack IAM:
+The AWS-managed `AdministratorAccess` policy is attached to the `Admins` group. This policy grants full access to all AWS services and resources (`"Action": "*", "Resource": "*"`), which is appropriate for the designated admin group.
 
 ```bash
-awslocal iam create-policy \
-  --policy-name LeastPrivilegeAdminPolicy \
-  --policy-document file://admin-policy.json
+awslocal iam attach-group-policy \
+  --group-name Admins \
+  --policy-arn arn:aws:iam::aws:policy/AdministratorAccess
 ```
 
-### 6.4 Attach the Policy to the Admin User
+No output is returned on success. The operation can be verified with:
 
 ```bash
-awslocal iam attach-user-policy \
-  --user-name admin-user \
-  --policy-arn arn:aws:iam::000000000000:policy/LeastPrivilegeAdminPolicy
-```
-
-### 6.5 Verify Attached Policies
-
-```bash
-awslocal iam list-attached-user-policies --user-name admin-user
+awslocal iam list-attached-group-policies --group-name Admins
 ```
 
 **Expected output:**
@@ -338,29 +198,169 @@ awslocal iam list-attached-user-policies --user-name admin-user
 {
     "AttachedPolicies": [
         {
-            "PolicyName": "LeastPrivilegeAdminPolicy",
-            "PolicyArn": "arn:aws:iam::000000000000:policy/LeastPrivilegeAdminPolicy"
+            "PolicyName": "AdministratorAccess",
+            "PolicyArn": "arn:aws:iam::aws:policy/AdministratorAccess"
         }
     ]
 }
 ```
 
-### 6.6 Evidence Screenshot
+### 3.4 Step 3 — Create the IAM User `CloudAdmin_jihan`
 
-The screenshot below shows the IAM policy creation and attachment workflow for the `admin-user`, confirming the least-privilege admin policy is successfully associated.
+```bash
+awslocal iam create-user --user-name CloudAdmin_jihan
+```
 
-![3. Least-Privilege Admin — User Setup and Policy Attachment](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/3.Least-Privilege%20Admin.png)
+**Output:**
 
-*Figure 3: Terminal and/or Web Console view showing the IAM admin user creation and least-privilege policy attachment.*
+```json
+{
+    "User": {
+        "Path": "/",
+        "UserName": "CloudAdmin_jihan",
+        "UserId": "AIDA...",
+        "Arn": "arn:aws:iam::000000000000:user/CloudAdmin_jihan",
+        "CreateDate": "2026-08-03T00:00:00+00:00"
+    }
+}
+```
+
+### 3.5 Step 4 — Add `CloudAdmin_jihan` to the `Admins` Group
+
+```bash
+awslocal iam add-user-to-group \
+  --user-name CloudAdmin_jihan \
+  --group-name Admins
+```
+
+### 3.6 Step 5 — Verify Group Membership (`aws iam get-group`)
+
+```bash
+awslocal iam get-group --group-name Admins
+```
+
+**Expected output:**
+
+```json
+{
+    "Users": [
+        {
+            "UserName": "CloudAdmin_jihan",
+            "UserId": "AIDA...",
+            "Arn": "arn:aws:iam::000000000000:user/CloudAdmin_jihan",
+            "Path": "/",
+            "CreateDate": "2026-08-03T00:00:00+00:00"
+        }
+    ],
+    "Group": {
+        "Path": "/",
+        "GroupName": "Admins",
+        "GroupId": "AGPA...",
+        "Arn": "arn:aws:iam::000000000000:group/Admins",
+        "CreateDate": "2026-08-03T00:00:00+00:00"
+    }
+}
+```
+
+The `Users` array confirms `CloudAdmin_jihan` is a member of the `Admins` group and therefore inherits the `AdministratorAccess` policy.
+
+### 3.7 Evidence — Least-Privilege Admin Setup
+
+The screenshot below shows the terminal output for the `Admins` group creation, `AdministratorAccess` policy attachment, `CloudAdmin_jihan` user creation, and group membership addition.
+
+![Admin Setup](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/3.Least-Privilege%20Admin.png)
+
+*Figure 3: Terminal output showing the Admins group creation, AdministratorAccess policy attached, and CloudAdmin_jihan added to the group.*
+
+### 3.8 Evidence — Admin Group Policy Verification
+
+The screenshot below confirms the `get-group` response showing `CloudAdmin_jihan` as a verified member of the `Admins` group, and the attached policy listing confirming `AdministratorAccess` is active at the group level.
+
+![Admin Policy Verification](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/4.Least-Privilege%20Admin%202.0.png)
+
+*Figure 4: `aws iam get-group` output confirming CloudAdmin_jihan's membership in the Admins group with AdministratorAccess policy verified.*
 
 ---
 
-## 7. Part 5 — Least-Privilege Admin 2.0 — Policy Verification
+## 4. Task 3 — Enforce Least Privilege with a Scoped Policy
 
-### 7.1 Create an Access Key for the Admin User
+### 4.1 Objective
+
+Create a separate IAM user (`Analyst_jihan`) whose permissions are restricted to read-only S3 operations, demonstrating the application of a scoped policy that limits the blast radius in the event of credential compromise.
+
+### 4.2 Step 1 — Create the IAM User `Analyst_jihan`
 
 ```bash
-awslocal iam create-access-key --user-name admin-user
+awslocal iam create-user --user-name Analyst_jihan
+```
+
+**Output:**
+
+```json
+{
+    "User": {
+        "Path": "/",
+        "UserName": "Analyst_jihan",
+        "UserId": "AIDA...",
+        "Arn": "arn:aws:iam::000000000000:user/Analyst_jihan",
+        "CreateDate": "2026-08-03T00:00:00+00:00"
+    }
+}
+```
+
+### 4.3 Step 2 — Attach `AmazonS3ReadOnlyAccess` to `Analyst_jihan`
+
+The AWS-managed `AmazonS3ReadOnlyAccess` policy is used, which grants `s3:Get*` and `s3:List*` permissions across all S3 resources. This is the minimum policy required for a data analyst role.
+
+```bash
+awslocal iam attach-user-policy \
+  --user-name Analyst_jihan \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+```
+
+### 4.4 Step 3 — List Attached Policies for `Analyst_jihan`
+
+```bash
+awslocal iam list-attached-user-policies --user-name Analyst_jihan
+```
+
+**Expected output:**
+
+```json
+{
+    "AttachedPolicies": [
+        {
+            "PolicyName": "AmazonS3ReadOnlyAccess",
+            "PolicyArn": "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+        }
+    ]
+}
+```
+
+### 4.5 Evidence — Analyst Scoped Policy
+
+The screenshot below shows the `Analyst_jihan` user creation, `AmazonS3ReadOnlyAccess` policy attachment, and the `list-attached-user-policies` verification output.
+
+![Analyst Scoped Policy](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/5.Analyst%20User%20%28Scoped%20Policy%29.png)
+
+*Figure 5: Terminal output showing Analyst_jihan created with AmazonS3ReadOnlyAccess — scoped policy attachment verified.*
+
+### 4.6 Security Analysis — Scoped Access and Blast Radius Reduction
+
+Scoping `Analyst_jihan`'s permissions to `AmazonS3ReadOnlyAccess` directly limits the blast radius if the account is compromised. Because the policy only permits `s3:Get*` and `s3:List*` operations, a threat actor who obtains these credentials can read existing S3 objects but cannot modify, delete, or create any resources — not just in S3, but across every other AWS service. There is no path to escalating privileges: the policy grants no IAM actions, so the attacker cannot create new users, generate new access keys for other accounts, or attach broader policies. Lateral movement to compute services like EC2 or Lambda is equally blocked. The damage is effectively bounded to the read exposure of whatever data sits in S3, rather than a full account takeover. This is the practical value of least-privilege — a breach becomes a data confidentiality incident rather than a complete infrastructure compromise.
+
+---
+
+## 5. Task 4 — Credential Hygiene & Access Keys
+
+### 5.1 Objective
+
+Demonstrate the full lifecycle of IAM access key management for `Analyst_jihan`: creation, listing, rotation (creating a replacement key), and deactivation of the old key using `--status Inactive`.
+
+### 5.2 Step 1 — Create an Access Key for `Analyst_jihan`
+
+```bash
+awslocal iam create-access-key --user-name Analyst_jihan
 ```
 
 **Output:**
@@ -368,327 +368,131 @@ awslocal iam create-access-key --user-name admin-user
 ```json
 {
     "AccessKey": {
-        "UserName": "admin-user",
+        "UserName": "Analyst_jihan",
         "AccessKeyId": "AKIA...",
-        "SecretAccessKey": "...",
         "Status": "Active",
-        "CreateDate": "2026-03-23T00:00:00+00:00"
+        "SecretAccessKey": "...",
+        "CreateDate": "2026-08-03T00:00:00+00:00"
     }
 }
 ```
 
-> ⚠️ **Security Note:** Treat the `SecretAccessKey` as a password. It is shown only **once** at creation time. Store it securely and never commit it to source control.
+> **Security note:** The `SecretAccessKey` is displayed only once at creation time. It must be stored securely — in a secrets manager or encrypted vault — and never committed to source control or embedded in documentation.
 
-### 7.2 Simulate the Admin User's Permissions
-
-Set temporary environment variables using the admin user's new keys:
+### 5.3 Step 2 — List Access Keys
 
 ```bash
-export AWS_ACCESS_KEY_ID="<AdminUserAccessKeyId>"
-export AWS_SECRET_ACCESS_KEY="<AdminUserSecretAccessKey>"
+awslocal iam list-access-keys --user-name Analyst_jihan
 ```
 
-### 7.3 Test Allowed Actions
-
-```bash
-# Should succeed — IAM:ListUsers is permitted
-awslocal iam list-users
-
-# Should succeed — S3:ListBuckets is permitted
-awslocal s3 ls
-```
-
-### 7.4 Test Denied Actions (Negative Test)
-
-To verify least-privilege boundaries, attempt an action outside the policy scope (e.g., if `cloudwatch:*` is not included):
-
-```bash
-awslocal cloudwatch list-metrics
-```
-
-**Expected:** `AccessDenied` error — confirming the policy boundary is enforced.
-
-### 7.5 Verify Policy Contents
-
-```bash
-awslocal iam get-policy \
-  --policy-arn arn:aws:iam::000000000000:policy/LeastPrivilegeAdminPolicy
-```
-
-```bash
-awslocal iam get-policy-version \
-  --policy-arn arn:aws:iam::000000000000:policy/LeastPrivilegeAdminPolicy \
-  --version-id v1
-```
-
-### 7.6 Evidence Screenshot
-
-The screenshot below demonstrates the admin policy verification, showing the policy version document and permission boundaries enforced for the `admin-user`.
-
-![4. Least-Privilege Admin 2.0 — Policy Verification](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/4.Least-Privilege%20Admin%202.0.png)
-
-*Figure 4: Verification of the least-privilege admin policy document, showing explicit allowed actions and confirming no wildcard `*:*` overreach.*
-
----
-
-## 8. Part 6 — Analyst User with Scoped Policy
-
-### 8.1 Purpose of a Scoped Policy
-
-An **Analyst User** should have **read-only** access limited to specific services. This models a real-world scenario where a data analyst can query resources but cannot modify infrastructure.
-
-### 8.2 Create the Analyst User
-
-```bash
-awslocal iam create-user --user-name analyst-user
-```
-
-### 8.3 Create the Scoped Read-Only Policy
-
-Save as `analyst-policy.json`:
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "AllowS3ReadOnly",
-      "Effect": "Allow",
-      "Action": [
-        "s3:GetObject",
-        "s3:ListBucket",
-        "s3:GetBucketLocation"
-      ],
-      "Resource": [
-        "arn:aws:s3:::*",
-        "arn:aws:s3:::*/*"
-      ]
-    },
-    {
-      "Sid": "AllowSTSIdentity",
-      "Effect": "Allow",
-      "Action": "sts:GetCallerIdentity",
-      "Resource": "*"
-    }
-  ]
-}
-```
-
-Create and attach the policy:
-
-```bash
-awslocal iam create-policy \
-  --policy-name AnalystScopedPolicy \
-  --policy-document file://analyst-policy.json
-
-awslocal iam attach-user-policy \
-  --user-name analyst-user \
-  --policy-arn arn:aws:iam::000000000000:policy/AnalystScopedPolicy
-```
-
-### 8.4 Create Access Keys for the Analyst User
-
-```bash
-awslocal iam create-access-key --user-name analyst-user
-```
-
-### 8.5 Test the Analyst Scope
-
-Switch to the analyst's credentials and test permissions:
-
-```bash
-export AWS_ACCESS_KEY_ID="<AnalystUserAccessKeyId>"
-export AWS_SECRET_ACCESS_KEY="<AnalystUserSecretAccessKey>"
-
-# Should succeed — ListBucket is allowed
-awslocal s3 ls
-
-# Should FAIL — IAM:ListUsers is NOT in the policy
-awslocal iam list-users
-```
-
-**Expected for IAM call:** `AccessDenied` — confirms the scoped policy is correctly restricting IAM actions.
-
-### 8.6 Evidence Screenshot
-
-The screenshot below shows the analyst user creation, scoped policy attachment, and the results of permission boundary testing.
-
-![5. Analyst User (Scoped Policy)](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/5.Analyst%20User%20(Scoped%20Policy).png)
-
-*Figure 5: Analyst user with scoped read-only policy applied — showing allowed S3 list operations and denied IAM operations, confirming correct permission scoping.*
-
----
-
-## 9. Part 7 — Credential Hygiene & Access Key Management
-
-### 9.1 Why Credential Hygiene Matters
-
-Leaked or long-lived credentials are among the **top causes of cloud security breaches**. Best practices include:
-
-- Rotating access keys periodically (every 90 days or less).
-- Deactivating keys before deleting them.
-- Never storing keys in source code, `.env` files committed to Git, or unencrypted storage.
-- Using IAM roles instead of long-term access keys wherever possible.
-
-### 9.2 List All Access Keys for a User
-
-```bash
-awslocal iam list-access-keys --user-name admin-user
-```
-
-**Output:**
+**Expected output:**
 
 ```json
 {
     "AccessKeyMetadata": [
         {
-            "UserName": "admin-user",
+            "UserName": "Analyst_jihan",
             "AccessKeyId": "AKIA...",
             "Status": "Active",
-            "CreateDate": "2026-03-23T00:00:00+00:00"
+            "CreateDate": "2026-08-03T00:00:00+00:00"
         }
     ]
 }
 ```
 
-### 9.3 Create a New (Replacement) Access Key
+The listing confirms the key is active and shows its creation date — useful for auditing key age against a rotation policy (e.g., rotate every 90 days).
+
+### 5.4 Step 3 — Rotate the Key (Create a Replacement)
 
 ```bash
-awslocal iam create-access-key --user-name admin-user
+awslocal iam create-access-key --user-name Analyst_jihan
 ```
 
-> After creating the new key, update all systems/applications using the old key to use the new credentials **before** deactivating the old one.
+A second key is created. At this point the user has two active keys. All applications using the old key should be updated to use the new key before the old one is deactivated.
 
-### 9.4 Deactivate the Old Access Key
+### 5.5 Step 4 — Deactivate the Old Key (`--status Inactive`)
 
 ```bash
 awslocal iam update-access-key \
-  --user-name admin-user \
+  --user-name Analyst_jihan \
   --access-key-id <OldAccessKeyId> \
   --status Inactive
 ```
 
-### 9.5 Verify the Key Status
+Setting the status to `Inactive` preserves the key record for audit purposes while immediately preventing it from authenticating any API calls. This is safer than outright deletion as a first step — it allows rollback if the new key has not been fully propagated to all consumers.
+
+### 5.6 Step 5 — Verify Key Status After Rotation
 
 ```bash
-awslocal iam list-access-keys --user-name admin-user
+awslocal iam list-access-keys --user-name Analyst_jihan
 ```
 
-Confirm the old key now shows `"Status": "Inactive"` and the new key shows `"Status": "Active"`.
+**Expected output:**
 
-### 9.6 Delete the Deactivated Key
-
-```bash
-awslocal iam delete-access-key \
-  --user-name admin-user \
-  --access-key-id <OldAccessKeyId>
+```json
+{
+    "AccessKeyMetadata": [
+        {
+            "UserName": "Analyst_jihan",
+            "AccessKeyId": "<OldAccessKeyId>",
+            "Status": "Inactive",
+            "CreateDate": "2026-08-03T00:00:00+00:00"
+        },
+        {
+            "UserName": "Analyst_jihan",
+            "AccessKeyId": "<NewAccessKeyId>",
+            "Status": "Active",
+            "CreateDate": "2026-08-03T00:00:00+00:00"
+        }
+    ]
+}
 ```
 
-### 9.7 Evidence Screenshot
+The old key shows `"Status": "Inactive"` and the new key shows `"Status": "Active"`, confirming a successful rotation.
 
-The screenshot below shows the access key lifecycle — creation, deactivation, and deletion — demonstrating proper credential hygiene practices.
+### 5.7 Evidence — Credential Rotation
 
-![6. Credential Hygiene & Access Key Management]![6. Credential Hygiene & Access Key Management](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/6.Credential%20Hygiene%20%26%20Access%20Key.png)
+The screenshot below shows the full access key lifecycle: initial key creation, listing, second key creation for rotation, deactivation of the old key, and the final `list-access-keys` output confirming the Inactive / Active state.
 
-*Figure 6: Access key management workflow — listing active keys, deactivating the old key, and confirming the Inactive status prior to deletion.*
+![Credential Rotation](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/6.Credential%20Hygiene%20%26%20Access%20Key%20Management.jpeg)
+
+*Figure 6: Access key rotation workflow — old key deactivated (Inactive), new key active, confirming proper credential hygiene for Analyst_jihan.*
+
+### 5.8 Security Analysis — Risks of Long-Lived Access Keys
+
+Long-lived IAM access keys are one of the most persistent and exploited attack vectors in cloud environments. Unlike passwords, access keys are rarely changed after initial creation, yet they are routinely embedded in source code, CI/CD configuration files, container images, and `.env` files — all of which are frequent targets for secret scanning attacks on public repositories. Once a static key is exposed, an attacker retains access indefinitely until the key is manually rotated or revoked, since the key does not expire on its own. There is no built-in notification when the key is used from an anomalous IP or at an unusual time — detection depends entirely on CloudTrail monitoring and alerting being configured correctly. In the context of `Analyst_jihan`, even though the permissions are scoped to S3 read-only, a compromised long-lived key still allows an attacker to silently exfiltrate data over an extended period. Rotating keys regularly (every 90 days is the AWS benchmark), deactivating rather than immediately deleting keys during rotation, and ultimately replacing long-term keys with IAM roles and short-lived STS tokens wherever possible are the correct mitigations.
 
 ---
 
-## 10. Part 8 — Teardown & Cleanup
+## 6. Session A Verification Checklist
 
-### 10.1 Detach Policies from Users
-
-```bash
-awslocal iam detach-user-policy \
-  --user-name admin-user \
-  --policy-arn arn:aws:iam::000000000000:policy/LeastPrivilegeAdminPolicy
-
-awslocal iam detach-user-policy \
-  --user-name analyst-user \
-  --policy-arn arn:aws:iam::000000000000:policy/AnalystScopedPolicy
-```
-
-### 10.2 Delete Access Keys
-
-```bash
-# List then delete all keys for each user
-awslocal iam list-access-keys --user-name admin-user
-awslocal iam delete-access-key --user-name admin-user --access-key-id <KeyId>
-
-awslocal iam list-access-keys --user-name analyst-user
-awslocal iam delete-access-key --user-name analyst-user --access-key-id <KeyId>
-```
-
-### 10.3 Delete IAM Users
-
-```bash
-awslocal iam delete-user --user-name admin-user
-awslocal iam delete-user --user-name analyst-user
-```
-
-### 10.4 Delete IAM Policies
-
-```bash
-awslocal iam delete-policy \
-  --policy-arn arn:aws:iam::000000000000:policy/LeastPrivilegeAdminPolicy
-
-awslocal iam delete-policy \
-  --policy-arn arn:aws:iam::000000000000:policy/AnalystScopedPolicy
-```
-
-### 10.5 Stop the LocalStack Container
-
-```bash
-# If started with docker-compose:
-docker-compose down
-
-# If started with docker run:
-docker stop <container_id>
-```
-
-> **Note:** Stopping the LocalStack container destroys all in-memory state (IAM users, policies, S3 buckets, etc.) unless a persistence volume was configured.
+| # | Deliverable | Task | Status |
+|---|---|---|---|
+| 1 | LocalStack container started and IAM service available | Environment Setup | ✅ |
+| 2 | `/_localstack/health` confirms `"iam": "available"` | Environment Setup | ✅ |
+| 3 | `is_license_activated: true` confirmed via health endpoint | Environment Setup | ✅ |
+| 4 | Dummy AWS credentials configured via `aws configure` | Environment Setup | ✅ |
+| 5 | `sts get-caller-identity` returns account `000000000000` | Environment Setup | ✅ |
+| 6 | IAM identity landscape table completed with 5 components | Task 1 | ✅ |
+| 7 | Root User, IAM User, IAM Policy, IAM Group, IAM Role defined | Task 1 | ✅ |
+| 8 | `Admins` group created in LocalStack IAM | Task 2 | ✅ |
+| 9 | `AdministratorAccess` policy attached to `Admins` group | Task 2 | ✅ |
+| 10 | `CloudAdmin_jihan` IAM user created | Task 2 | ✅ |
+| 11 | `CloudAdmin_jihan` added to `Admins` group | Task 2 | ✅ |
+| 12 | `aws iam get-group` confirms `CloudAdmin_jihan` membership | Task 2 | ✅ |
+| 13 | `Analyst_jihan` IAM user created | Task 3 | ✅ |
+| 14 | `AmazonS3ReadOnlyAccess` attached to `Analyst_jihan` | Task 3 | ✅ |
+| 15 | `list-attached-user-policies` confirms scoped policy | Task 3 | ✅ |
+| 16 | Blast radius analysis documented for scoped Analyst access | Task 3 | ✅ |
+| 17 | Access key created for `Analyst_jihan` | Task 4 | ✅ |
+| 18 | `list-access-keys` shows Active key | Task 4 | ✅ |
+| 19 | New replacement key created (rotation step) | Task 4 | ✅ |
+| 20 | Old key deactivated with `--status Inactive` | Task 4 | ✅ |
+| 21 | `list-access-keys` confirms Inactive / Active key states | Task 4 | ✅ |
+| 22 | Risks of long-lived access keys documented | Task 4 | ✅ |
+| 23 | All 6 evidence screenshots embedded with correct paths | All Tasks | ✅ |
 
 ---
 
-## 11. Verification Checklist
-
-| # | Task | Status |
-|---|---|---|
-| 1 | LocalStack container started successfully with Auth Token | ✅ |
-| 2 | `/_localstack/info` confirms `is_license_activated: true` | ✅ |
-| 3 | LocalStack Web Console accessible at `localhost:31566` | ✅ |
-| 4 | Resource Browser visible and functional in Web Console | ✅ |
-| 5 | Dummy AWS credentials configured via `aws configure` | ✅ |
-| 6 | `aws $EP sts get-caller-identity` returns account `000000000000` | ✅ |
-| 7 | `admin-user` created successfully in LocalStack IAM | ✅ |
-| 8 | `LeastPrivilegeAdminPolicy` created and attached to `admin-user` | ✅ |
-| 9 | Admin policy version verified — no wildcard `*:*` overreach | ✅ |
-| 10 | `analyst-user` created with scoped read-only S3 policy | ✅ |
-| 11 | Analyst user permission boundary tested — IAM denied, S3 allowed | ✅ |
-| 12 | Access key rotation demonstrated — old key deactivated, new key active | ✅ |
-| 13 | Old access key deleted after deactivation (credential hygiene) | ✅ |
-| 14 | All IAM resources cleaned up after lab completion | ✅ |
-
----
-
-## 12. Summary
-
-This lab successfully demonstrated the **Auth-Token activation track** for LocalStack Pro (effective since 23 March 2026), covering the full lifecycle of cloud identity management in a local AWS emulation environment.
-
-**Key outcomes:**
-
-1. **LocalStack Activation** — The container was launched with `LOCALSTACK_AUTH_TOKEN` and verified via `/_localstack/info`, confirming Pro edition features including the Web Console and Resource Browser.
-
-2. **AWS CLI Integration** — Dummy credentials were configured and `sts get-caller-identity` confirmed end-to-end connectivity to the local STS endpoint at `http://localhost:4566`.
-
-3. **Least-Privilege IAM** — An `admin-user` was created with an explicitly scoped policy (`LeastPrivilegeAdminPolicy`) granting specific service permissions rather than blanket `*:*` access, demonstrating the **Principle of Least Privilege**.
-
-4. **Scoped Analyst Policy** — An `analyst-user` was created with a tightly scoped read-only S3 policy (`AnalystScopedPolicy`), confirmed by positive (S3 list) and negative (IAM denied) permission tests.
-
-5. **Credential Hygiene** — The access key lifecycle (create → rotate → deactivate → delete) was demonstrated, reinforcing security best practices around credential management in cloud environments.
-
-> ⚠️ **Final Security Reminder:** Always treat `LOCALSTACK_AUTH_TOKEN`, AWS `SecretAccessKey` values, and any IAM credentials as **secrets**. Use environment variables, secrets managers, or `.env` files excluded from version control (`.gitignore`). Never embed secrets in code, documentation, or screenshots shared publicly.
-
----
-
-*Report generated for IKB42603 Cloud Computing Security Essentials — Session A (Week 1): Cloud Identity with LocalStack.*
+*Lab report prepared for IKB42603 Cloud Computing Security Essentials — Session A (Week 1): Cloud Identity with LocalStack.*
+*Student: NURUL JIHAN NABILAH BINTI AZLAN | Institution: UniKL MIIT | Instructor: Prof. Dr. Shahrulniza Musa*
