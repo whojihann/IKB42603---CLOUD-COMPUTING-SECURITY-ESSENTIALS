@@ -8,9 +8,8 @@
 |---|---|
 | **Course Code** | IKB42603 Cloud Computing Security Essentials |
 | **Lab Title** | Lab 0.1 — LocalStack with Auth Token + Web Console |
-| **Student Name** | *(Your Full Name)* |
+| **Student Name** | NURUL JIHAN NABILAH BINTI AZLAN |
 | **Platform** | LocalStack Community / Pro (Auth Token Track) |
-| **Date** | *(Submission Date)* |
 
 ---
 
