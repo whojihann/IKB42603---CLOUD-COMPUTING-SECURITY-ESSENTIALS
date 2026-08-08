@@ -488,7 +488,7 @@ ccse-lab1-control-plane  Ready    control-plane   30s   v1.28.x
 
 ### Evidence — Kubernetes Cluster Setup
 
-![Setup Kubernetes Cluster](./Session%20B%20%28Week%202%29%20%E2%80%94%20Enforced%20Access%20Control%20with%20Kubernetes/1.Setup%20-%20Create%20a%20Local%20Kubernetes%20Cluster.png)
+![Setup - Create a Local Kubernetes Cluster](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/1.Setup%20-%20Create%20a%20Local%20Kubernetes%20Cluster.png)
 
 *Figure 7: `kind create cluster` output and `kubectl get nodes` confirming ccse-lab1 is running and the control-plane node is Ready.*
 
@@ -548,7 +548,7 @@ Without namespace separation, a single misconfigured RBAC binding could inadvert
 
 ### Evidence — Namespace Separation
 
-![Separate Environments](./Session%20B%20%28Week%202%29%20%E2%80%94%20Enforced%20Access%20Control%20with%20Kubernetes/2.Separate%20Environments%20with%20Namespaces.png)
+![Separate Environments with Namespaces](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/2.Separate%20Environments%20with%20Namespaces.png)
 
 *Figure 8: `kubectl get namespaces` confirming both dev and prod namespaces are Active and isolated.*
 
@@ -657,7 +657,7 @@ dev-user-binding   Role/pod-reader   10s
 
 ### Evidence — Role Definition and Binding
 
-![Define Role and Binding](./Session%20B%20%28Week%202%29%20%E2%80%94%20Enforced%20Access%20Control%20with%20Kubernetes/3.Define%20a%20Role%20and%20Bind%20It%20%28Least%20Privilege%29.png)
+![Define a Role and Bind It](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/3.Define%20a%20Role%20and%20Bind%20It%20(Least%20Privilege).png)
 
 *Figure 9: pod-reader Role and dev-user-binding RoleBinding created and verified in the dev namespace.*
 
@@ -748,7 +748,7 @@ Neither the verb (`delete`) nor the namespace (`prod`) is accessible to `dev-use
 
 ### Evidence — Access Control Tests
 
-![Test Access Control](./Session%20B%20%28Week%202%29%20%E2%80%94%20Enforced%20Access%20Control%20with%20Kubernetes/4.Test%20That%20Access%20Control%20Works.png)
+![Test That Access Control Works](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/4.Test%20That%20Access%20Control%20Works.png)
 
 *Figure 10: kubectl auth can-i results confirming dev-user can list pods in dev (yes) but is denied delete in dev and all access in prod (no).*
 
@@ -800,7 +800,7 @@ The `roleRef` is immutable after creation — it cannot be changed without delet
 
 ### Evidence — Verification Command Output
 
-![Verification Command](./Session%20B%20%28Week%202%29%20%E2%80%94%20Enforced%20Access%20Control%20with%20Kubernetes/vertication%20command.png.png)
+![Verification Command](./Session%20A%20(Week%201)%20%E2%80%94%20Cloud%20Identity%20with%20LocalStack/vertication%20command.png.png)
 
 *Figure 11: `kubectl get rolebinding dev-user-binding -n dev -o yaml` output confirming the RoleBinding subjects and roleRef are correctly defined.*
 
