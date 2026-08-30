@@ -116,11 +116,11 @@ kubectl get pods -n kube-system
 
 **Screenshots:**
 
-![Setup - Cluster with Policy Enforcement 1](./Session%20A%20(Week%203)%20%E2%80%94%20Compute%20Isolation%20%26%20the%20Default-Open/Setup%20%E2%80%94%20Cluster%20with%20Policy%20Enforcement%201.0.png)
+<img src="./Setup — Cluster with Policy Enforcement 1.png" alt="Setup 1" width="100%">
 
-![Setup - Cluster with Policy Enforcement 2](./Session%20A%20(Week%203)%20%E2%80%94%20Compute%20Isolation%20%26%20the%20Default-Open/Setup%20%E2%80%94%20Cluster%20with%20Policy%20Enforcement%202.0.png)
+<img src="./Setup — Cluster with Policy Enforcement 2.png" alt="Setup 2" width="100%">
 
-![Setup - Cluster with Policy Enforcement 3](./Session%20A%20(Week%203)%20%E2%80%94%20Compute%20Isolation%20%26%20the%20Default-Open/Setup%20%E2%80%94%20Cluster%20with%20Policy%20Enforcement%203.0.png)
+<img src="./Setup — Cluster with Policy Enforcement 3.png" alt="Setup 3" width="100%">
 
 ---
 
