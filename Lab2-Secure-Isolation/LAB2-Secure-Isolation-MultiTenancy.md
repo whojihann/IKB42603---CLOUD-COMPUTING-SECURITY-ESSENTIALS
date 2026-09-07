@@ -7,6 +7,7 @@
 | Field | Details |
 |---|---|
 | **Course Code** | IKB42603 |
+| **Name** | Nurul Jihan Nabilah Binti Azlan |
 | **Lab Title** | Secure Isolation & Multi-Tenancy |
 | **Sessions** | Session A (Week 3) — Compute Isolation · Session B (Week 4) — Network & Storage Isolation |
 | **Environment** | Kali Linux · Docker Engine · kind (Kubernetes in Docker) · Calico CNI |
