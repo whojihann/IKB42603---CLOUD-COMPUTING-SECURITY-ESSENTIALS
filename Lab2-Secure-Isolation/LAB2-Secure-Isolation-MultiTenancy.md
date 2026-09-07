@@ -119,9 +119,9 @@ kubectl get pods -n kube-system
 
 ![Setup 1](./setup1.png)
 
-<img src="./Setup — Cluster with Policy Enforcement 2.png" alt="Setup 2" width="100%">
+![Setup 2](./setup2.png)>
 
-<img src="./Setup — Cluster with Policy Enforcement 3.png" alt="Setup 3" width="100%">
+![Setup 3](./setup3.png)
 
 ---
 
@@ -194,7 +194,7 @@ kubectl run curl-test \
 
 **Screenshot:**
 
-![Task 2 - Observe the Default-Open Risk](./Session%20A%20(Week%203)%20%E2%80%94%20Compute%20Isolation%20%26%20the%20Default-Open/Task%202%20%E2%80%94%20Observe%20the%20Default-Open%20Risk.png)
+![Task 2 - Observe the Default-Open Risk](./task2.png)
 
 ---
 
@@ -254,7 +254,7 @@ kubectl get resourcequota -n tenant-a
 
 **Screenshot:**
 
-![Task 3 - Noisy Neighbour Containment](./Session%20A%20(Week%203)%20%E2%80%94%20Compute%20Isolation%20%26%20the%20Default-Open/Task%203%20%E2%80%94%20Contain%20the%20Noisy%20Neighbour%20%28Resource%20Quotas%29.png)
+![Task 3 - Contain the Noisy Neighbour](./task3.png)
 
 ---
 
@@ -315,7 +315,7 @@ kubectl run curl-test \
 
 **Screenshot:**
 
-![Task 4 - Default-Deny Network Isolation](./Session%20B%20(Week%204)%20%E2%80%94%20Network%20%26%20Storage%20Isolation/Task%204%20%E2%80%94%20Default-Deny%20Network%20Isolation.png)
+![Task 4 - Default-Deny Network Isolation](./task4.png)
 
 ---
 
@@ -392,7 +392,7 @@ no    ← cross-namespace access denied (no RoleBinding exists in tenant-b)
 
 **Screenshot:**
 
-![Task 5 - Storage and Secret Isolation](./Session%20B%20(Week%204)%20%E2%80%94%20Network%20%26%20Storage%20Isolation/Task%205%20%E2%80%94%20Storage%20%26%20Secret%20Isolation.png)
+![Task 5 - Storage and Secret Isolation](./task5.png)
 
 ---
 
@@ -454,7 +454,7 @@ docker volume ls
 
 **Screenshot:**
 
-![Task 6 - Data Remanence and Secure Deletion](./Session%20B%20(Week%204)%20%E2%80%94%20Network%20%26%20Storage%20Isolation/Task%206%20%E2%80%94%20Data%20Remanence%20%26%20Secure%20Deletion.png)
+![Task 6 - Data Remanence and Secure Deletion](./task6.png)
 
 ---
 
