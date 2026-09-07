@@ -161,7 +161,7 @@ kubectl get svc -n tenant-b
 
 **Screenshot:**
 
-![Task 1 - Two Tenants on One Cluster](./Session%20A%20(Week%203)%20%E2%80%94%20Compute%20Isolation%20%26%20the%20Default-Open/Task%201%20%E2%80%94%20Two%20Tenants%20on%20One%20Cluster.png)
+![Task 1 - Two Tenants on One Cluster](./task1.png)
 
 ---
 
