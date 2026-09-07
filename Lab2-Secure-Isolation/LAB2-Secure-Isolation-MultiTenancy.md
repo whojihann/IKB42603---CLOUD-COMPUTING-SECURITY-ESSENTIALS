@@ -117,7 +117,7 @@ kubectl get pods -n kube-system
 
 **Screenshots:**
 
-<img src="./Setup — Cluster with Policy Enforcement 1.png" alt="Setup 1" width="100%">
+![Setup 1](./Setup%20%E2%80%94%20Cluster%20with%20Policy%20Enforcement%201.png)
 
 <img src="./Setup — Cluster with Policy Enforcement 2.png" alt="Setup 2" width="100%">
 
