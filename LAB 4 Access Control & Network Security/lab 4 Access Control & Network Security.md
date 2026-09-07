@@ -598,7 +598,8 @@ roleRef:
 ```
 #### Screenshot — Verification Commands
 
-![Verification Command](./Verification_Command.png)
+![Docker Container Hardening Verification](./Docker_Container_Hardening_Verification.png)
+
 ---
 
 ### Docker Container Hardening Verification
@@ -631,6 +632,8 @@ Verify non-root user:
 docker inspect hardened --format '{{json .Config.User}}'
 # Expected: "1000:1000"
 ```
+#### Screenshot — Docker Container Hardening Verification
+
 
 ---
 
