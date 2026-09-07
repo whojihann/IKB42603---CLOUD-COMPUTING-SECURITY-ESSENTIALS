@@ -595,13 +595,10 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
   name: dev-role
-
+```
 #### Screenshot — Verification Commands
 
-![Verification Command](./verification.png)
-
-```
-
+![Verification Command](./Verification_Command.png)
 ---
 
 ### Docker Container Hardening Verification
