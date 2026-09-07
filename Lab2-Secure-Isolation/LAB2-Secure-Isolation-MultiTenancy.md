@@ -602,6 +602,10 @@ kubectl get all -n tenant-a
 kubectl get all -n tenant-b
 ```
 
+**Screenshot:**
+
+![Verification Command](./verification.png)
+
 ### Teardown & Cleanup
 
 > **Note:** Run cleanup only after all tasks have been documented. These commands are irreversible within the lab session.
@@ -630,6 +634,9 @@ kind get clusters
 # 7. (Optional) Remove the Calico and kind config files
 rm -f kind-config.yaml
 ```
+**Screenshot:**
+
+![Cleanup & Teardown](./cleanup.png)
 
 **Expected final state:** `kind get clusters` returns no output; `kubectl get nodes` returns a connection error (cluster no longer exists); `docker volume ls` shows no lab volumes.
 
