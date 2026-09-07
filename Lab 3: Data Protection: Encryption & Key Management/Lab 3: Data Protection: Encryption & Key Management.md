@@ -118,7 +118,7 @@ The screenshot confirms the full encryption/decryption lifecycle:
 - `cat record.enc` displayed binary ciphertext prefixed with the OpenSSL magic header `Salted__`, confirming the salt is prepended to the ciphertext blob.
 - The `diff` comparison produced **no delta**, and the shell printed `MATCH: decryption successful`, confirming lossless round-trip encryption.
 
-![Task 1 Evidence](./assets/Task_1.png)
+![Task 1 Evidence](./Task_1.png)
 
 ### Technical Security Analysis
 
@@ -165,7 +165,7 @@ The screenshot confirms all six steps completed successfully:
 - `openssl dgst -sha256 -sign` created a detached binary signature file `record.sig`.
 - `openssl dgst -sha256 -verify` returned **`Verified OK`** — confirming the signature is cryptographically valid and the document has not been altered since signing.
 
-![Task 2 Evidence](./assets/Task_2.png)
+![Task 2 Evidence](./Task_2.png)
 
 ### Technical Security Analysis
 
@@ -227,8 +227,8 @@ Patient: Ahmad, Diagnosis: confidential
 
 This confirms that nginx is serving the file over a fully encrypted TLS channel on port 8443.
 
-![Task 3 Part 1 Evidence](./assets/Task_3_part1.png)
-![Task 3 Part 2 Evidence](./assets/Task_3_part2.png)
+![Task 3 Part 1 Evidence](./Task_3_part1.png)
+![Task 3 Part 2 Evidence](./Task_3_part2.png)
 
 ### Technical Security Analysis
 
@@ -301,7 +301,7 @@ YgAAAAAAAAAAAAAAAAAACr1td8msimUopgBzCbPuXk
 
 This confirms the CMK is operational and capable of encrypting arbitrary data payloads.
 
-![Task 4 Evidence](./assets/Task_4.png)
+![Task 4 Evidence](./Task_4.png)
 
 ### Technical Security Analysis
 
@@ -359,7 +359,7 @@ The terminal output confirms the complete envelope encryption workflow:
 - `rm datakey.bin datakey.b64` deleted both plaintext key representations from disk.
 - The final `echo` confirmed: `Only the KMS-wrapped data key (datakey.enc) remains.`
 
-![Task 5 Evidence](./assets/Task_5.png)
+![Task 5 Evidence](./Task_5.png)
 
 ### Technical Security Analysis
 
@@ -451,8 +451,8 @@ d39-20fbfbb48391 is pending deletion.
 
 The `record.env.enc` ciphertext file still exists on disk but is now permanently and cryptographically inaccessible — the CMK needed to unwrap `datakey.enc` is pending deletion and all operations against it are refused by KMS.
 
-![Task 6 Part 1 Evidence](./assets/Task_6_part1.png)
-![Task 6 Part 2 Evidence](./assets/Task_6_part2.png)
+![Task 6 Part 1 Evidence](./Task_6_part1.png)
+![Task 6 Part 2 Evidence](./Task_6_part2.png)
 
 ### Technical Security Analysis
 
@@ -521,7 +521,7 @@ export data | e1470ccfaf43dcab3c17d5710dc9eacbb7ac65c9f522ca98c2c503431b32da68
 
 Each hash entry incorporates the previous hash concatenated with the new log message, meaning no historical entry can be silently altered without cascading hash mismatches through every subsequent entry.
 
-![Task 7 Evidence](./assets/Task_7.png)
+![Task 7 Evidence](./Task_7.png)
 
 ### Technical Security Analysis
 
